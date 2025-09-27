@@ -1,0 +1,1078 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ixmrt Admin Portal</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: #f8f9fa;
+            min-height: 100vh;
+            color: #333;
+        }
+
+        .sidebar {
+            position: fixed;
+            left: 0;
+            top: 0;
+            width: 280px;
+            height: 100vh;
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: white;
+            padding: 20px;
+            overflow-y: auto;
+        }
+
+        .sidebar h1 {
+            font-size: 1.8rem;
+            margin-bottom: 30px;
+            text-align: center;
+            color: #ecf0f1;
+        }
+
+        .sidebar nav {
+            margin-bottom: 40px;
+        }
+
+        .nav-item {
+            display: flex;
+            align-items: center;
+            padding: 12px 15px;
+            margin-bottom: 8px;
+            border-radius: 8px;
+            cursor: pointer;
+            transition: background 0.3s ease;
+            font-size: 0.95rem;
+        }
+
+        .nav-item:hover,
+        .nav-item.active {
+            background: rgba(255,255,255,0.1);
+        }
+
+        .nav-item i {
+            margin-right: 12px;
+            font-size: 1.1rem;
+        }
+
+        .stats-widget {
+            background: rgba(255,255,255,0.1);
+            border-radius: 12px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+
+        .stats-widget h3 {
+            font-size: 0.9rem;
+            opacity: 0.8;
+            margin-bottom: 10px;
+        }
+
+        .stats-number {
+            font-size: 2rem;
+            font-weight: bold;
+            color: #3498db;
+        }
+
+        .main-content {
+            margin-left: 280px;
+            padding: 30px;
+            min-height: 100vh;
+        }
+
+        .onboarding {
+            background: white;
+            border-radius: 20px;
+            padding: 60px;
+            text-align: center;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            margin-bottom: 30px;
+        }
+
+        .onboarding.hidden {
+            display: none;
+        }
+
+        .onboarding h2 {
+            color: #2c3e50;
+            margin-bottom: 20px;
+            font-size: 2rem;
+        }
+
+        .onboarding-icon {
+            font-size: 5rem;
+            margin-bottom: 30px;
+        }
+
+        .dashboard-section {
+            display: none;
+        }
+
+        .dashboard-section.active {
+            display: block;
+        }
+
+        .section-header {
+            display: flex;
+            justify-content: between;
+            align-items: center;
+            margin-bottom: 30px;
+        }
+
+        .section-header h2 {
+            color: #2c3e50;
+            font-size: 1.8rem;
+        }
+
+        .filter-bar {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 25px;
+            align-items: center;
+        }
+
+        .filter-btn {
+            padding: 8px 16px;
+            border: 2px solid #3498db;
+            background: white;
+            color: #3498db;
+            border-radius: 20px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            font-size: 0.9rem;
+        }
+
+        .filter-btn:hover,
+        .filter-btn.active {
+            background: #3498db;
+            color: white;
+        }
+
+        .agent-card {
+            background: white;
+            border-radius: 16px;
+            padding: 25px;
+            margin-bottom: 20px;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+            transition: transform 0.3s ease;
+        }
+
+        .agent-card:hover {
+            transform: translateY(-2px);
+        }
+
+        .agent-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+            margin-bottom: 20px;
+        }
+
+        .agent-info h3 {
+            color: #2c3e50;
+            font-size: 1.3rem;
+            margin-bottom: 5px;
+        }
+
+        .agent-info p {
+            color: #7f8c8d;
+            font-size: 0.95rem;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .status-pending {
+            background: #f39c12;
+            color: white;
+        }
+
+        .status-approved {
+            background: #27ae60;
+            color: white;
+        }
+
+        .status-rejected {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .status-review {
+            background: #9b59b6;
+            color: white;
+        }
+
+        .agent-details {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin-bottom: 20px;
+            font-size: 0.9rem;
+        }
+
+        .detail-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .detail-icon {
+            color: #3498db;
+        }
+
+        .agent-actions {
+            display: flex;
+            gap: 10px;
+            justify-content: flex-end;
+            margin-top: 20px;
+        }
+
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 8px;
+            cursor: pointer;
+            font-weight: 600;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+        }
+
+        .btn-approve {
+            background: #27ae60;
+            color: white;
+        }
+
+        .btn-approve:hover {
+            background: #229954;
+        }
+
+        .btn-reject {
+            background: #e74c3c;
+            color: white;
+        }
+
+        .btn-reject:hover {
+            background: #c0392b;
+        }
+
+        .btn-review {
+            background: #3498db;
+            color: white;
+        }
+
+        .btn-review:hover {
+            background: #2980b9;
+        }
+
+        .btn-secondary {
+            background: #95a5a6;
+            color: white;
+        }
+
+        .empty-state {
+            text-align: center;
+            padding: 60px 20px;
+            color: #7f8c8d;
+        }
+
+        .empty-state-icon {
+            font-size: 4rem;
+            margin-bottom: 20px;
+        }
+
+        .modal {
+            display: none;
+            position: fixed;
+            z-index: 1000;
+            left: 0;
+            top: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0,0,0,0.5);
+        }
+
+        .modal-content {
+            background: white;
+            margin: 5% auto;
+            padding: 30px;
+            border-radius: 16px;
+            width: 90%;
+            max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .modal-header h3 {
+            color: #2c3e50;
+            font-size: 1.5rem;
+        }
+
+        .close {
+            color: #aaa;
+            float: right;
+            font-size: 28px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .close:hover {
+            color: #000;
+        }
+
+        .detail-section {
+            margin-bottom: 25px;
+        }
+
+        .detail-section h4 {
+            color: #3498db;
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .detail-text {
+            background: #f8f9fa;
+            padding: 15px;
+            border-radius: 8px;
+            line-height: 1.6;
+        }
+
+        .notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            color: white;
+            font-weight: 600;
+            z-index: 1001;
+            transform: translateX(400px);
+            transition: transform 0.3s ease;
+        }
+
+        .notification.success {
+            background: #27ae60;
+        }
+
+        .notification.error {
+            background: #e74c3c;
+        }
+
+        .notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 1024px) {
+            .sidebar {
+                width: 250px;
+            }
+            
+            .main-content {
+                margin-left: 250px;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .sidebar {
+                transform: translateX(-100%);
+                transition: transform 0.3s ease;
+            }
+            
+            .sidebar.open {
+                transform: translateX(0);
+            }
+            
+            .main-content {
+                margin-left: 0;
+                padding: 20px 15px;
+            }
+            
+            .agent-details {
+                grid-template-columns: 1fr;
+            }
+            
+            .agent-actions {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Sidebar -->
+    <div class="sidebar">
+        <h1>ixmrt Admin</h1>
+        
+        <nav>
+            <div class="nav-item active" data-section="dashboard" onclick="showSection('dashboard')">
+                <i>📊</i> Dashboard
+            </div>
+            <div class="nav-item" data-section="pending" onclick="showSection('pending')">
+                <i>⏳</i> Pending Agents
+            </div>
+            <div class="nav-item" data-section="approved" onclick="showSection('approved')">
+                <i>✅</i> Approved Agents
+            </div>
+            <div class="nav-item" data-section="metrics" onclick="showSection('metrics')">
+                <i>📈</i> Platform Metrics
+            </div>
+            <div class="nav-item" data-section="escrow" onclick="showSection('escrow')">
+                <i>💎</i> Escrow Management
+            </div>
+        </nav>
+
+        <div class="stats-widget">
+            <h3>Pending Reviews</h3>
+            <div class="stats-number" id="pendingCount">0</div>
+        </div>
+
+        <div class="stats-widget">
+            <h3>Active Agents</h3>
+            <div class="stats-number" id="activeCount">0</div>
+        </div>
+
+        <div class="stats-widget">
+            <h3>Total Applications</h3>
+            <div class="stats-number" id="totalCount">0</div>
+        </div>
+    </div>
+
+    <!-- Main Content -->
+    <div class="main-content">
+        <!-- Onboarding Screen 1 -->
+        <div class="onboarding" id="onboard1">
+            <div class="onboarding-icon">⚡</div>
+            <h2>Welcome to ixmrt Admin Portal</h2>
+            <p>Manage agent applications, monitor platform metrics, and oversee Solana escrow transactions across Nigerian university campuses.</p>
+            <button class="btn btn-review" onclick="nextOnboard()" style="margin-top: 30px;">Get Started</button>
+        </div>
+
+        <!-- Onboarding Screen 2 -->
+        <div class="onboarding hidden" id="onboard2">
+            <div class="onboarding-icon">🎯</div>
+            <h2>Quality Control Center</h2>
+            <p>Review agent credentials, verify KYC documentation, and ensure only qualified iOS engineers join our nwaboy apprenticeship network.</p>
+            <div style="margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="prevOnboard()">Back</button>
+                <button class="btn btn-review" onclick="nextOnboard()" style="margin-left: 10px;">Continue</button>
+            </div>
+        </div>
+
+        <!-- Onboarding Screen 3 -->
+        <div class="onboarding hidden" id="onboard3">
+            <div class="onboarding-icon">🔗</div>
+            <h2>Blockchain Integration</h2>
+            <p>Monitor Solana smart contracts, manage escrow disputes, and maintain platform trust through decentralized governance.</p>
+            <div style="margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="prevOnboard()">Back</button>
+                <button class="btn btn-approve" onclick="startDashboard()">Enter Dashboard</button>
+            </div>
+        </div>
+
+        <!-- Dashboard Section -->
+        <div class="dashboard-section" id="dashboardSection">
+            <div class="section-header">
+                <h2>Dashboard Overview</h2>
+            </div>
+            
+            <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 20px; margin-bottom: 30px;">
+                <div class="agent-card">
+                    <h3 style="color: #f39c12; margin-bottom: 10px;">⏳ Pending Reviews</h3>
+                    <div class="stats-number" id="dashPending">0</div>
+                    <p style="color: #7f8c8d; margin-top: 10px;">Agents awaiting approval</p>
+                </div>
+                <div class="agent-card">
+                    <h3 style="color: #27ae60; margin-bottom: 10px;">✅ Active Agents</h3>
+                    <div class="stats-number" id="dashActive">0</div>
+                    <p style="color: #7f8c8d; margin-top: 10px;">Live on platform</p>
+                </div>
+                <div class="agent-card">
+                    <h3 style="color: #3498db; margin-bottom: 10px;">📊 Total Jobs</h3>
+                    <div class="stats-number" id="dashJobs">247</div>
+                    <p style="color: #7f8c8d; margin-top: 10px;">Completed repairs</p>
+                </div>
+                <div class="agent-card">
+                    <h3 style="color: #9b59b6; margin-bottom: 10px;">💎 Escrow Volume</h3>
+                    <div class="stats-number" id="dashEscrow">₦2.4M</div>
+                    <p style="color: #7f8c8d; margin-top: 10px;">Total secured</p>
+                </div>
+            </div>
+
+            <div class="agent-card">
+                <h3 style="margin-bottom: 20px;">Recent Activity</h3>
+                <div id="recentActivity">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <h3>No recent activity</h3>
+                        <p>New agent submissions will appear here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Pending Agents Section -->
+        <div class="dashboard-section" id="pendingSection">
+            <div class="section-header">
+                <h2>Pending Agent Applications</h2>
+            </div>
+            
+            <div class="filter-bar">
+                <div class="filter-btn active" onclick="filterAgents('all')">All</div>
+                <div class="filter-btn" onclick="filterAgents('unilag')">UNILAG</div>
+                <div class="filter-btn" onclick="filterAgents('unical')">UNICAL</div>
+                <div class="filter-btn" onclick="filterAgents('uniben')">UNIBEN</div>
+                <div class="filter-btn" onclick="filterAgents('caleb')">Caleb</div>
+                <div class="filter-btn" onclick="filterAgents('uniabuja')">UNIABUJA</div>
+            </div>
+
+            <div id="pendingAgents">
+                <div class="empty-state">
+                    <div class="empty-state-icon">⏳</div>
+                    <h3>No pending applications</h3>
+                    <p>New agent submissions will appear here for review</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Approved Agents Section -->
+        <div class="dashboard-section" id="approvedSection">
+            <div class="section-header">
+                <h2>Approved Agents</h2>
+            </div>
+            
+            <div id="approvedAgents">
+                <div class="empty-state">
+                    <div class="empty-state-icon">✅</div>
+                    <h3>No approved agents yet</h3>
+                    <p>Approved agents will be listed here</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Metrics Section -->
+        <div class="dashboard-section" id="metricsSection">
+            <div class="section-header">
+                <h2>Platform Metrics</h2>
+            </div>
+            
+            <div class="agent-card">
+                <h3>University Distribution</h3>
+                <div id="universityMetrics" style="margin-top: 20px;">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📊</div>
+                        <p>Analytics will populate as agents join</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Escrow Management Section -->
+        <div class="dashboard-section" id="escrowSection">
+            <div class="section-header">
+                <h2>Escrow Management</h2>
+            </div>
+            
+            <div class="agent-card">
+                <h3>Smart Contract Status</h3>
+                <div style="margin-top: 20px;">
+                    <div class="empty-state">
+                        <div class="empty-state-icon">💎</div>
+                        <h3>Solana Integration Coming Soon</h3>
+                        <p>Smart contract deployment and escrow management features will be available here</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Agent Detail Modal -->
+    <div id="agentModal" class="modal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h3 id="modalTitle">Agent Details</h3>
+                <span class="close" onclick="closeModal()">&times;</span>
+            </div>
+            <div id="modalBody">
+                <!-- Dynamic content will be inserted here -->
+            </div>
+            <div style="text-align: right; margin-top: 30px;">
+                <button class="btn btn-secondary" onclick="closeModal()">Close</button>
+                <button class="btn btn-reject" onclick="rejectAgent()" style="margin-left: 10px;">Reject</button>
+                <button class="btn btn-approve" onclick="approveAgent()" style="margin-left: 10px;">Approve</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let currentOnboard = 1;
+        let currentSection = 'dashboard';
+        let selectedAgent = null;
+        let agents = [];
+
+        // Initialize on page load
+        window.addEventListener('load', function() {
+            loadAgents();
+            updateStats();
+            checkUrlParams();
+            
+            // Show new submission notification if coming from agent app
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('newSubmission') === 'true') {
+                setTimeout(() => {
+                    showNotification('New agent application received!', 'success');
+                    showSection('pending');
+                }, 1000);
+            }
+        });
+
+        function nextOnboard() {
+            if (currentOnboard < 3) {
+                document.getElementById(`onboard${currentOnboard}`).classList.add('hidden');
+                currentOnboard++;
+                document.getElementById(`onboard${currentOnboard}`).classList.remove('hidden');
+            }
+        }
+
+        function prevOnboard() {
+            if (currentOnboard > 1) {
+                document.getElementById(`onboard${currentOnboard}`).classList.add('hidden');
+                currentOnboard--;
+                document.getElementById(`onboard${currentOnboard}`).classList.remove('hidden');
+            }
+        }
+
+        function startDashboard() {
+            document.getElementById('onboard3').classList.add('hidden');
+            document.getElementById('dashboardSection').classList.add('active');
+        }
+
+        function showSection(section) {
+            // Update nav
+            document.querySelectorAll('.nav-item').forEach(item => {
+                item.classList.remove('active');
+            });
+            document.querySelector(`[data-section="${section}"]`).classList.add('active');
+
+            // Update content
+            document.querySelectorAll('.dashboard-section').forEach(sec => {
+                sec.classList.remove('active');
+            });
+            document.getElementById(section + 'Section').classList.add('active');
+            
+            currentSection = section;
+            
+            // Hide onboarding if still visible
+            document.querySelectorAll('.onboarding').forEach(ob => {
+                ob.classList.add('hidden');
+            });
+        }
+
+        function loadAgents() {
+            // Load from localStorage
+            agents = JSON.parse(localStorage.getItem('ixmrt_shared_agents') || '[]');
+            renderPendingAgents();
+            renderApprovedAgents();
+            updateRecentActivity();
+        }
+
+        function renderPendingAgents() {
+            const container = document.getElementById('pendingAgents');
+            const pendingAgents = agents.filter(agent => agent.status === 'pending');
+            
+            if (pendingAgents.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">⏳</div>
+                        <h3>No pending applications</h3>
+                        <p>New agent submissions will appear here for review</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = pendingAgents.map(agent => `
+                <div class="agent-card" data-university="${agent.university}">
+                    <div class="agent-header">
+                        <div class="agent-info">
+                            <h3>${agent.firmName}</h3>
+                            <p>${agent.contactName} • ${agent.email}</p>
+                        </div>
+                        <span class="status-badge status-pending">Pending</span>
+                    </div>
+                    
+                    <div class="agent-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">🎓</span>
+                            <span>${getUniversityName(agent.university)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">⚡</span>
+                            <span>${agent.experience} experience</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🔥</span>
+                            <span>${agent.jobStreak || 0} job streak</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">📱</span>
+                            <span>${agent.phone}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="agent-actions">
+                        <button class="btn btn-review" onclick="viewAgent('${agent.id}')">Review Details</button>
+                        <button class="btn btn-reject" onclick="quickReject('${agent.id}')">Reject</button>
+                        <button class="btn btn-approve" onclick="quickApprove('${agent.id}')">Approve</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function renderApprovedAgents() {
+            const container = document.getElementById('approvedAgents');
+            const approvedAgents = agents.filter(agent => agent.status === 'approved');
+            
+            if (approvedAgents.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">✅</div>
+                        <h3>No approved agents yet</h3>
+                        <p>Approved agents will be listed here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = approvedAgents.map(agent => `
+                <div class="agent-card">
+                    <div class="agent-header">
+                        <div class="agent-info">
+                            <h3>${agent.firmName}</h3>
+                            <p>${agent.contactName} • ${getUniversityName(agent.university)}</p>
+                        </div>
+                        <span class="status-badge status-approved">Live</span>
+                    </div>
+                    
+                    <div class="agent-details">
+                        <div class="detail-item">
+                            <span class="detail-icon">⭐</span>
+                            <span>Escrow Rating: ${agent.escrowReputation}/5</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">✅</span>
+                            <span>${agent.completedJobs} jobs completed</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">🕒</span>
+                            <span>Approved: ${formatDate(agent.approvedAt || agent.submittedAt)}</span>
+                        </div>
+                        <div class="detail-item">
+                            <span class="detail-icon">${agent.tiktokHandle ? '🎵' : '📱'}</span>
+                            <span>${agent.tiktokHandle || 'No social media'}</span>
+                        </div>
+                    </div>
+                    
+                    <div class="agent-actions">
+                        <button class="btn btn-review" onclick="viewAgent('${agent.id}')">View Details</button>
+                        <button class="btn btn-secondary" onclick="suspendAgent('${agent.id}')">Suspend</button>
+                    </div>
+                </div>
+            `).join('');
+        }
+
+        function updateRecentActivity() {
+            const container = document.getElementById('recentActivity');
+            const recentAgents = agents
+                .sort((a, b) => new Date(b.submittedAt) - new Date(a.submittedAt))
+                .slice(0, 3);
+
+            if (recentAgents.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-state">
+                        <div class="empty-state-icon">📝</div>
+                        <h3>No recent activity</h3>
+                        <p>New agent submissions will appear here</p>
+                    </div>
+                `;
+                return;
+            }
+
+            container.innerHTML = recentAgents.map(agent => `
+                <div style="display: flex; justify-content: space-between; align-items: center; padding: 15px 0; border-bottom: 1px solid #eee;">
+                    <div>
+                        <strong>${agent.firmName}</strong> from ${getUniversityName(agent.university)}
+                        <br><small style="color: #7f8c8d;">${formatDate(agent.submittedAt)}</small>
+                    </div>
+                    <span class="status-badge status-${agent.status}">${agent.status}</span>
+                </div>
+            `).join('');
+        }
+
+        function updateStats() {
+            const pending = agents.filter(agent => agent.status === 'pending').length;
+            const approved = agents.filter(agent => agent.status === 'approved').length;
+            const total = agents.length;
+
+            // Update sidebar stats
+            document.getElementById('pendingCount').textContent = pending;
+            document.getElementById('activeCount').textContent = approved;
+            document.getElementById('totalCount').textContent = total;
+
+            // Update dashboard stats
+            document.getElementById('dashPending').textContent = pending;
+            document.getElementById('dashActive').textContent = approved;
+        }
+
+        function viewAgent(agentId) {
+            const agent = agents.find(a => a.id === agentId);
+            if (!agent) return;
+
+            selectedAgent = agent;
+            
+            document.getElementById('modalTitle').textContent = `${agent.firmName} - Application Details`;
+            document.getElementById('modalBody').innerHTML = `
+                <div class="detail-section">
+                    <h4>Basic Information</h4>
+                    <div class="detail-text">
+                        <strong>Firm:</strong> ${agent.firmName}<br>
+                        <strong>Contact:</strong> ${agent.contactName}<br>
+                        <strong>Email:</strong> ${agent.email}<br>
+                        <strong>Phone:</strong> ${agent.phone}<br>
+                        <strong>University:</strong> ${getUniversityName(agent.university)}
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>Experience & Skills</h4>
+                    <div class="detail-text">
+                        <strong>Years of Experience:</strong> ${agent.experience}<br>
+                        <strong>Job Streak:</strong> ${agent.jobStreak || 0} consecutive successful repairs<br>
+                        <strong>Specializations:</strong><br>${agent.specializations}
+                        ${agent.certifications ? `<br><br><strong>Certifications:</strong><br>${agent.certifications}` : ''}
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>Fix Process (QA & AI Training)</h4>
+                    <div class="detail-text">
+                        ${agent.fixProcess}
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>Apprenticeship Program</h4>
+                    <div class="detail-text">
+                        <strong>Duration:</strong> ${agent.apprenticeshipDuration || 'Not offering apprenticeship'}<br>
+                        ${agent.apprenticeshipPerks ? `<strong>Student Benefits:</strong><br>${agent.apprenticeshipPerks}` : ''}
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>Media & Portfolio</h4>
+                    <div class="detail-text">
+                        ${agent.tiktokHandle ? `<strong>TikTok:</strong> ${agent.tiktokHandle}<br>` : ''}
+                        ${agent.introVideo ? `<strong>Intro Video:</strong> <a href="${agent.introVideo}" target="_blank">View Video</a><br>` : ''}
+                        <strong>Solana Wallet:</strong> ${agent.solanaWallet || 'Not provided'}
+                    </div>
+                </div>
+                
+                <div class="detail-section">
+                    <h4>Application Status</h4>
+                    <div class="detail-text">
+                        <strong>Submitted:</strong> ${formatDate(agent.submittedAt)}<br>
+                        <strong>Status:</strong> <span class="status-badge status-${agent.status}">${agent.status}</span>
+                    </div>
+                </div>
+            `;
+            
+            document.getElementById('agentModal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('agentModal').style.display = 'none';
+            selectedAgent = null;
+        }
+
+        function quickApprove(agentId) {
+            if (confirm('Are you sure you want to approve this agent? They will be immediately visible on the client platform.')) {
+                approveAgentById(agentId);
+            }
+        }
+
+        function quickReject(agentId) {
+            if (confirm('Are you sure you want to reject this application? This action cannot be undone.')) {
+                rejectAgentById(agentId);
+            }
+        }
+
+        function approveAgent() {
+            if (!selectedAgent) return;
+            approveAgentById(selectedAgent.id);
+            closeModal();
+        }
+
+        function rejectAgent() {
+            if (!selectedAgent) return;
+            rejectAgentById(selectedAgent.id);
+            closeModal();
+        }
+
+        function approveAgentById(agentId) {
+            const agentIndex = agents.findIndex(a => a.id === agentId);
+            if (agentIndex === -1) return;
+
+            agents[agentIndex].status = 'approved';
+            agents[agentIndex].approvedAt = new Date().toISOString();
+            agents[agentIndex].escrowReputation = 5; // Starting reputation
+
+            // Save to localStorage
+            localStorage.setItem('ixmrt_shared_agents', JSON.stringify(agents));
+
+            // Update UI
+            loadAgents();
+            updateStats();
+            
+            showNotification(`${agents[agentIndex].firmName} has been approved and is now live!`, 'success');
+
+            // Navigate to client with approved parameter (simulate real flow)
+            setTimeout(() => {
+                if (confirm('Open client app to see the newly approved agent?')) {
+                    window.open(`https://crvstal.github.io/clientarch?newAgent=${agentId}`, '_blank');
+                }
+            }, 1500);
+        }
+
+        function rejectAgentById(agentId) {
+            const agentIndex = agents.findIndex(a => a.id === agentId);
+            if (agentIndex === -1) return;
+
+            agents[agentIndex].status = 'rejected';
+            agents[agentIndex].rejectedAt = new Date().toISOString();
+
+            // Save to localStorage
+            localStorage.setItem('ixmrt_shared_agents', JSON.stringify(agents));
+
+            // Update UI
+            loadAgents();
+            updateStats();
+            
+            showNotification(`${agents[agentIndex].firmName} application has been rejected.`, 'error');
+        }
+
+        function suspendAgent(agentId) {
+            if (confirm('Suspend this agent? They will be removed from the client platform until reinstated.')) {
+                const agentIndex = agents.findIndex(a => a.id === agentId);
+                if (agentIndex === -1) return;
+
+                agents[agentIndex].status = 'suspended';
+                agents[agentIndex].suspendedAt = new Date().toISOString();
+
+                localStorage.setItem('ixmrt_shared_agents', JSON.stringify(agents));
+                loadAgents();
+                updateStats();
+                
+                showNotification(`${agents[agentIndex].firmName} has been suspended.`, 'error');
+            }
+        }
+
+        function filterAgents(university) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+
+            const agentCards = document.querySelectorAll('#pendingAgents .agent-card');
+            agentCards.forEach(card => {
+                if (university === 'all' || card.dataset.university === university) {
+                    card.style.display = 'block';
+                } else {
+                    card.style.display = 'none';
+                }
+            });
+        }
+
+        function checkUrlParams() {
+            const urlParams = new URLSearchParams(window.location.search);
+            
+            // Handle different URL parameters from other apps
+            if (urlParams.get('newSubmission') === 'true') {
+                // Coming from agent app with new submission
+                currentSection = 'pending';
+                setTimeout(() => {
+                    loadAgents();
+                    updateStats();
+                }, 500);
+            }
+        }
+
+        function getUniversityName(code) {
+            const universities = {
+                'unilag': 'University of Lagos',
+                'unical': 'University of Calabar', 
+                'uniben': 'University of Benin',
+                'caleb': 'Caleb University',
+                'uniabuja': 'University of Abuja'
+            };
+            return universities[code] || code;
+        }
+
+        function formatDate(dateString) {
+            return new Date(dateString).toLocaleDateString('en-US', {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        function showNotification(message, type) {
+            const notification = document.createElement('div');
+            notification.className = `notification ${type}`;
+            notification.textContent = message;
+            
+            document.body.appendChild(notification);
+            
+            setTimeout(() => {
+                notification.classList.add('show');
+            }, 100);
+            
+            setTimeout(() => {
+                notification.classList.remove('show');
+                setTimeout(() => {
+                    document.body.removeChild(notification);
+                }, 300);
+            }, 4000);
+        }
+
+        // Close modal when clicking outside
+        window.onclick = function(event) {
+            const modal = document.getElementById('agentModal');
+            if (event.target == modal) {
+                closeModal();
+            }
+        }
+
+        // Initial load
+        setTimeout(() => {
+            loadAgents();
+            updateStats();
+        }, 500);
+    </script>
+</body>
+</html>
